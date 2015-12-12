@@ -12,7 +12,7 @@ public class Gfx {
 	public static Spritesheet startNodeSheet;
 	public static Spritesheet goalNodeSheet;
 	public static Spritesheet spawnerNodeSheet;
-	public static Spritesheet playerSheet;
+	public static Spritesheet virusSheet;
 	public static Spritesheet enemySheet;
 	
 	public static Animation weakNodeAnim;
@@ -21,7 +21,7 @@ public class Gfx {
 	public static Animation startNodeAnim;
 	public static Animation goalNodeAnim;
 	public static Animation spawnerNodeAnim;
-	public static Animation playerAnim;
+	public static Animation virusAnim;
 	public static Animation enemyAnim;
 	
 	public static Texture bg2 = new Texture("bg2.png");
@@ -30,9 +30,10 @@ public class Gfx {
 	{
 		System.out.println("Initializing assets...");
 		
-		weakNodeSheet = new Spritesheet("verde.png", 1, 1);
-		weakNodeAnim = new Animation(1f, weakNodeSheet.get(0));
-		
+		weakNodeSheet = new Spritesheet("greenode_4x3.png", 4, 4);
+		weakNodeAnim = new Animation(0.05f, weakNodeSheet.getRange(0, 8));
+		weakNodeAnim.setPlayMode(PlayMode.LOOP);
+
 		midNodeSheet = new Spritesheet("azul.png", 1, 1);
 		midNodeAnim = new Animation(1f, midNodeSheet.get(0));
 		
@@ -50,6 +51,10 @@ public class Gfx {
 		spawnerNodeSheet = new Spritesheet("brownode.png", 1, 10);
 		spawnerNodeAnim = new Animation(0.05f, spawnerNodeSheet.getAll());
 		spawnerNodeAnim.setPlayMode(PlayMode.LOOP);
+		
+		virusSheet = new Spritesheet("virus.png", 1, 17);
+		virusAnim = new Animation(0.05f, virusSheet.getAll());
+		virusAnim.setPlayMode(PlayMode.LOOP);		
 
 		System.out.println("Assets loaded");
 	}
