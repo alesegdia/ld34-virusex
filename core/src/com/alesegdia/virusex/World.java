@@ -14,6 +14,7 @@ import com.alesegdia.virusex.entities.node.SpawnerNode;
 import com.alesegdia.virusex.entities.node.StartNode;
 import com.alesegdia.virusex.entities.node.WeakNode;
 import com.alesegdia.virusex.entities.organism.Organism;
+import com.alesegdia.virusex.entities.organism.Virus;
 import com.alesegdia.virusex.level.LevelData;
 import com.alesegdia.virusex.level.LinkEntry;
 import com.alesegdia.virusex.level.NodeEntry;
@@ -25,7 +26,12 @@ public class World {
 
 	List<Node> nodes = new LinkedList<Node>();
 	List<Link> links = new LinkedList<Link>();
+	List<Organism> organisms = new LinkedList<Organism>();
+	
 	private Node rootNode;
+	private Virus virus;
+	private StartNode startNode;
+	private GoalNode goalNode;
 
 	public World()
 	{
@@ -34,6 +40,16 @@ public class World {
 	
 	public void addNode(Node e)
 	{
+		if( e instanceof StartNode )
+		{
+			this.startNode = ((StartNode)e);
+		}
+		
+		if( e instanceof GoalNode )
+		{
+			this.goalNode = ((GoalNode)e);
+		}
+		
 		if( nodes.isEmpty() )
 		{
 			rootNode = e;
@@ -48,21 +64,38 @@ public class World {
 		this.links.add(l);
 	}
 	
+	public void addOrganism(Organism o)
+	{
+		if( o instanceof Virus )
+		{
+			this.virus = ((Virus)o);
+		}
+		this.organisms.add(o);
+	}
+	
 	public void update(float delta)
 	{
 		for( Entity e : nodes )
 		{
 			e.update(delta);
 		}
+		
+		for( Entity e : organisms )
+		{
+			e.update(delta);
+		}
+	}
+	
+	public Virus getVirus()
+	{
+		return virus;
 	}
 	
 	public void renderNodes( SpriteBatch batch )
 	{
 		for( Node n : nodes )
 		{
-			batch.draw(n.getDrawable(),
-					n.position.x - n.getDrawable().getRegionWidth() / 2,
-					n.position.y - n.getDrawable().getRegionHeight() / 2);
+			renderEntity(n, batch);
 		}
 	}
 	
@@ -72,6 +105,20 @@ public class World {
 		{
 			l.render(srend);
 		}
+	}
+	
+	public void renderOrganisms(SpriteBatch batch) {
+		for( Organism o : organisms )
+		{
+			renderEntity( o, batch );
+		}
+	}
+	
+	public void renderEntity( Entity n, SpriteBatch b )
+	{
+		b.draw(n.getDrawable(),
+				n.position.x - n.getDrawable().getRegionWidth() / 2,
+				n.position.y - n.getDrawable().getRegionHeight() / 2);
 	}
 	
 	public void disconnectNodes()
@@ -200,5 +247,12 @@ public class World {
 	public Node getRootNode() {
 		return rootNode;
 	}
-	
+
+	public GoalNode getGoalNode() {
+		return this.goalNode;
+	}
+	public StartNode getStartNode() {
+		return this.startNode;
+	}
+
 }
