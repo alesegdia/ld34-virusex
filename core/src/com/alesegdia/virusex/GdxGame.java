@@ -13,10 +13,15 @@ public class GdxGame extends Game {
 	public SpriteBatch batch;
 	public BitmapFont font;
 	public ShapeRenderer shapeRenderer;
+	private boolean editorMode;
 	
+	public GdxGame(boolean b) {
+		this.editorMode = b;
+	}
+
 	@Override
 	public void create () {
-		gameScreen = new GameScreen(this);
+		gameScreen = new GameScreen(this, "newLevel.json", editorMode );
 		setScreen(gameScreen);
 		batch = new SpriteBatch();
 		font = new BitmapFont();

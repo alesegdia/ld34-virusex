@@ -1,7 +1,12 @@
 package com.alesegdia.virusex.screen;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
+
 import com.alesegdia.virusex.GdxGame;
 import com.alesegdia.virusex.World;
+import com.alesegdia.virusex.assets.Gfx;
 import com.alesegdia.virusex.entities.node.GoalNode;
 import com.alesegdia.virusex.entities.node.HardNode;
 import com.alesegdia.virusex.entities.node.Link;
@@ -10,6 +15,7 @@ import com.alesegdia.virusex.entities.node.Node;
 import com.alesegdia.virusex.entities.node.SpawnerNode;
 import com.alesegdia.virusex.entities.node.StartNode;
 import com.alesegdia.virusex.entities.node.WeakNode;
+import com.alesegdia.virusex.entities.organism.Pathfinder;
 import com.alesegdia.virusex.level.LevelData;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -26,27 +32,36 @@ public class GameScreen implements Screen {
 	World gw = new World();
 	ToolMode toolMode = ToolMode.WEAK;
 	private boolean edit;
+	private String levelPath;
+	private boolean start;
 	
-	public GameScreen( GdxGame g )
+	public GameScreen( GdxGame g, String levelPath )
 	{
-		this(g, true);
+		this(g, levelPath, true);
 	}
 	
-	public GameScreen( GdxGame g, boolean edit )
+	public GameScreen( GdxGame g, String levelPath, boolean edit )
 	{
 		this.g = g;
 		this.edit = edit;
+		this.levelPath = levelPath;
 	}
 	
 	@Override
 	public void show() {
 		this.gw.clear();
+		this.start = true;
 	}
 	
 	Node firstCx = null;
 	Node secondCx = null;
 	
+	Node firstPf = null;
+	Node secondPf = null;
+	
 	Node toMove = null;
+	
+	String levelFile = "newLevel.json";
 	
 	boolean instructions = true;
 	
@@ -57,6 +72,8 @@ public class GameScreen implements Screen {
 							   "z/x/c => weak/mid/high\n" +
 							   "F2/F4 => save/load\n" +
 							   "F1 => open/close instructions";
+	
+	List<Node> path = new LinkedList<Node>();
 	
 	void handleEdit()
 	{
@@ -70,6 +87,8 @@ public class GameScreen implements Screen {
 		if( Gdx.input.isKeyJustPressed(Input.Keys.W) ) toolMode = ToolMode.MOVE;
 		if( Gdx.input.isKeyJustPressed(Input.Keys.E) ) toolMode = ToolMode.DELETE;
 		if( Gdx.input.isKeyJustPressed(Input.Keys.O) ) toolMode = ToolMode.DISCONNECT;
+		if( Gdx.input.isKeyJustPressed(Input.Keys.P) ) toolMode = ToolMode.PATHFIND;
+		
 		
 		if( Gdx.input.isKeyJustPressed(Input.Keys.O) )
 		{
@@ -80,12 +99,12 @@ public class GameScreen implements Screen {
 		{
 			int mx = Gdx.input.getX();
 			int my = Gdx.graphics.getHeight() - Gdx.input.getY();
-			if( toolMode == ToolMode.WEAK ) this.gw.addNode(new WeakNode(mx, my));
-			if( toolMode == ToolMode.MID ) this.gw.addNode(new MidNode(mx, my));
-			if( toolMode == ToolMode.HARD ) this.gw.addNode(new HardNode(mx, my));
-			if( toolMode == ToolMode.GOAL ) this.gw.addNode(new GoalNode(mx, my));
-			if( toolMode == ToolMode.START ) this.gw.addNode(new StartNode(mx, my));
-			if( toolMode == ToolMode.SPAWNER ) this.gw.addNode(new SpawnerNode(mx, my));
+			if( toolMode == ToolMode.WEAK ) this.gw.addNode(new WeakNode(gw, mx, my));
+			if( toolMode == ToolMode.MID ) this.gw.addNode(new MidNode(gw, mx, my));
+			if( toolMode == ToolMode.HARD ) this.gw.addNode(new HardNode(gw, mx, my));
+			if( toolMode == ToolMode.GOAL ) this.gw.addNode(new GoalNode(gw, mx, my));
+			if( toolMode == ToolMode.START ) this.gw.addNode(new StartNode(gw, mx, my));
+			if( toolMode == ToolMode.SPAWNER ) this.gw.addNode(new SpawnerNode(gw, mx, my));
 			
 			if( toolMode == ToolMode.DELETE )
 			{
@@ -120,6 +139,34 @@ public class GameScreen implements Screen {
 				}
 			}
 			
+			if( toolMode == ToolMode.PATHFIND )
+			{
+				Node n = this.gw.findNear( new Vector2( mx, my ) );
+				if( n != null )
+				{
+					System.out.println("Selected node");
+					if( firstPf == null )
+					{
+						firstPf = n;
+					}
+					else
+					{
+						if( firstPf != secondPf )
+						{
+							secondPf = n;
+
+							Pathfinder pf = new Pathfinder(gw.getRootNode());
+							path = pf.findNextNode(firstPf, secondPf);
+							
+							System.out.println("path size: " + path.size());
+							
+							firstPf = null;
+							secondPf = null;
+						}
+					}
+				}
+			}
+			
 			if( toolMode == ToolMode.MOVE )
 			{
 				Node n = this.gw.findNear( new Vector2( mx, my ) );
@@ -144,11 +191,23 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		
+		if( start )
+		{
+			this.loadLevel(this.levelPath);
+			start = false;
+		}
+
 		gw.update(delta);
+
+		Gdx.gl.glClearColor(0.24f, 0.11f, 0f, 1);
+		//Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		
-		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		g.batch.begin();
+		g.batch.draw(Gfx.bg2, 0, 0);
+		g.batch.end();
+		
 		if( this.edit )
 		{
 			handleEdit();
@@ -175,9 +234,9 @@ public class GameScreen implements Screen {
 			if( toolMode == ToolMode.MOVE ) g.font.draw(g.batch, "MOVE", x, y);
 			if( toolMode == ToolMode.DELETE ) g.font.draw(g.batch, "DELETE", x, y);
 			if( toolMode == ToolMode.DISCONNECT ) g.font.draw(g.batch, "DISCONNECT", x, y);
+			if( toolMode == ToolMode.PATHFIND ) g.font.draw(g.batch, "PATHFIND", x, y);
 			
 			if( instructions ) g.font.draw(g.batch, instructions_text, 10, Gdx.graphics.getHeight() - 10);
-			g.batch.end();
 			
 			if( Gdx.input.isKeyJustPressed(Input.Keys.F2))
 			{
@@ -185,9 +244,30 @@ public class GameScreen implements Screen {
 			}
 			if( Gdx.input.isKeyJustPressed(Input.Keys.F4))
 			{
-				loadLevel();
+				Scanner kb = new Scanner(System.in);
+				String level = kb.next();
+				if( level == "" )
+				{
+					loadLevel();
+				}
+				else
+				{
+					loadLevel(level);
+				}
 			}
 		}
+		
+		g.batch.end();
+		
+		g.shapeRenderer.begin(ShapeType.Filled);
+		for( Node n : path )
+		{
+			g.shapeRenderer.setColor(1, 1, 0, 1);
+			g.shapeRenderer.circle(n.position.x, n.position.y, 10);
+			g.shapeRenderer.setColor(1, 1, 1, 1);
+		}
+		g.shapeRenderer.end();
+
 	}
 	
 	public void saveLevel()
@@ -195,22 +275,31 @@ public class GameScreen implements Screen {
 		LevelData ld = gw.makeLevelData();
 		Json json = new Json();
 		System.out.println(json.prettyPrint(ld));
-		FileHandle file = Gdx.files.local("newLevel.json");
+		FileHandle file = Gdx.files.local(levelPath);
 		file.writeString(json.toJson(ld), false);
 	}
 	
 	public void loadLevel()
 	{
+		loadLevel("newLevel.json");
+	}
+	
+	public void loadLevel(String levelPath)
+	{
+		this.levelFile = levelPath;
 		gw.clear();
 		
-		FileHandle file = Gdx.files.local("newLevel.json");
-		String jsonString = file.readString();
-		
-		System.out.println(jsonString);
-		Json json = new Json();
-		LevelData ld = json.fromJson(LevelData.class, jsonString);
-		
-		gw.loadLevelData(ld);
+		FileHandle file = Gdx.files.local(levelPath);
+		if( file.exists() )
+		{
+			String jsonString = file.readString();
+			
+			System.out.println(jsonString);
+			Json json = new Json();
+			LevelData ld = json.fromJson(LevelData.class, jsonString);
+			
+			gw.loadLevelData(ld);
+		}
 	}
 
 	@Override
