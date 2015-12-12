@@ -1,7 +1,6 @@
 package com.alesegdia.virusex.entities;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -13,9 +12,10 @@ public class Entity {
 	public float timer = 0;
 	public float zOrder = 0;
 	
-	public Entity(SpriteBatch batch, float x, float y)
+	public Entity(float x, float y, Animation anim)
 	{
 		this.position = new Vector2(x, y);
+		this.animation = anim;
 	}
 	
 	public void update( float delta )
