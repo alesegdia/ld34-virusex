@@ -25,6 +25,8 @@ public class Gfx {
 
 	public static void Initialize()
 	{
+		System.out.println("Initializing assets...");
+		
 		weakNodeSheet = new Spritesheet("verde.png", 1, 1);
 		weakNodeAnim = new Animation(1f, weakNodeSheet.get(0));
 		
@@ -38,10 +40,12 @@ public class Gfx {
 		startNodeAnim = new Animation(1f, startNodeSheet.get(0));
 		
 		goalNodeSheet = new Spritesheet("rosa.png", 1, 1);
-		weakNodeAnim = new Animation(1f, weakNodeSheet.get(0));
+		goalNodeAnim = new Animation(1f, goalNodeSheet.get(0));
 		
 		spawnerNodeSheet = new Spritesheet("marron.png", 1, 1);
-		weakNodeAnim = new Animation(1f, weakNodeSheet.get(0));
+		spawnerNodeAnim = new Animation(1f, spawnerNodeSheet.get(0));
+
+		System.out.println("Assets loaded");
 	}
 	
 }
