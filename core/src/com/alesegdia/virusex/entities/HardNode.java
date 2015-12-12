@@ -1,11 +1,11 @@
 package com.alesegdia.virusex.entities;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.alesegdia.virusex.assets.Gfx;
 
-public class HardNode extends Entity {
+public class HardNode extends Node {
 
-	public HardNode(SpriteBatch batch, float x, float y) {
-		super(batch, x, y);
+	public HardNode(float x, float y) {
+		super(x, y, Gfx.hardNodeAnim);
 		// TODO Auto-generated constructor stub
 	}
 

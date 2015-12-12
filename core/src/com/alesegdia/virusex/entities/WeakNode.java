@@ -1,11 +1,11 @@
 package com.alesegdia.virusex.entities;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.alesegdia.virusex.assets.Gfx;
 
-public class WeakNode extends Entity {
+public class WeakNode extends Node {
 
-	public WeakNode(SpriteBatch batch, float x, float y) {
-		super(batch, x, y);
+	public WeakNode(float x, float y) {
+		super(x, y, Gfx.weakNodeAnim);
 		// TODO Auto-generated constructor stub
 	}
 

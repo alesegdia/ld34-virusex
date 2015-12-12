@@ -1,11 +1,11 @@
 package com.alesegdia.virusex.entities;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.alesegdia.virusex.assets.Gfx;
 
-public class SpawnerNode extends Entity {
+public class SpawnerNode extends Node {
 
-	public SpawnerNode(SpriteBatch batch, float x, float y) {
-		super(batch, x, y);
+	public SpawnerNode(float x, float y) {
+		super(x, y, Gfx.spawnerNodeAnim);
 		// TODO Auto-generated constructor stub
 	}
 
