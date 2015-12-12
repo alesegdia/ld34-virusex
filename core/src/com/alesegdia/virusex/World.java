@@ -25,6 +25,7 @@ public class World {
 
 	List<Node> nodes = new LinkedList<Node>();
 	List<Link> links = new LinkedList<Link>();
+	private Node rootNode;
 
 	public World()
 	{
@@ -33,6 +34,10 @@ public class World {
 	
 	public void addNode(Node e)
 	{
+		if( nodes.isEmpty() )
+		{
+			rootNode = e;
+		}
 		this.nodes.add(e);
 	}
 	
@@ -102,7 +107,7 @@ public class World {
 		{
 			Vector2 tmp = new Vector2(mousePos);
 			tmp.sub(n.position);
-			if( tmp.len() < 100 )
+			if( tmp.len() < 50 )
 			{
 				return n;
 			}
@@ -144,21 +149,56 @@ public class World {
 	public void loadLevelData(LevelData ld) {
 		for( NodeEntry ne : ld.nodes )
 		{
-			if( ne.nodeType.equals("weak") ) 	addNode(new WeakNode(ne.x, ne.y));
-			if( ne.nodeType.equals("mid") ) 	addNode(new MidNode(ne.x, ne.y));
-			if( ne.nodeType.equals("hard") ) 	addNode(new HardNode(ne.x, ne.y));
-			if( ne.nodeType.equals("start") ) 	addNode(new StartNode(ne.x, ne.y));
-			if( ne.nodeType.equals("goal") ) 	addNode(new GoalNode(ne.x, ne.y));
-			if( ne.nodeType.equals("spawner") ) addNode(new SpawnerNode(ne.x, ne.y));
+			if( ne.nodeType.equals("weak") ) 	addNode(new WeakNode(this, ne.x, ne.y));
+			if( ne.nodeType.equals("mid") ) 	addNode(new MidNode(this, ne.x, ne.y));
+			if( ne.nodeType.equals("hard") ) 	addNode(new HardNode(this, ne.x, ne.y));
+			if( ne.nodeType.equals("start") ) 	addNode(new StartNode(this, ne.x, ne.y));
+			if( ne.nodeType.equals("goal") ) 	addNode(new GoalNode(this, ne.x, ne.y));
+			if( ne.nodeType.equals("spawner") ) addNode(new SpawnerNode(this, ne.x, ne.y));
 		}
 		
-		/*
 		for( LinkEntry le : ld.links )
 		{
 			Link l = new Link( this.findNear(new Vector2(le.x1, le.y1)), this.findNear(new Vector2(le.x2, le.y2)));
 			this.addLink(l);
 		}
-		*/
+	}
+	
+	public void sanitizeLinks()
+	{
+		List<Link> todel = new LinkedList<Link>();
+		for( Link li : links )
+		{
+			if( li.nodeA == li.nodeB )
+			{
+				todel.add(li);
+			}
+		}
+		
+		for( Link li : todel )
+		{
+			links.remove(li);
+		}
+	}
+
+	public void removeLink(Node n1, Node n2) {
+		List<Link> todel = new LinkedList<Link>();
+		for( Link li : links )
+		{
+			if( (li.nodeA == n1 && li.nodeB == n2) || (li.nodeB == n1 && li.nodeA == n2) )
+			{
+				todel.add(li);
+			}
+		}
+		
+		for( Link li : todel )
+		{
+			links.remove(li);			
+		}
+	}
+
+	public Node getRootNode() {
+		return rootNode;
 	}
 	
 }
