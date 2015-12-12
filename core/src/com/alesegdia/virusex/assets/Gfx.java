@@ -1,7 +1,7 @@
 package com.alesegdia.virusex.assets;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 
 public class Gfx {
 
@@ -33,17 +33,20 @@ public class Gfx {
 		midNodeSheet = new Spritesheet("azul.png", 1, 1);
 		midNodeAnim = new Animation(1f, midNodeSheet.get(0));
 		
-		hardNodeSheet = new Spritesheet("rojo.png", 1, 1);
-		hardNodeAnim = new Animation(1f, hardNodeSheet.get(0));
+		hardNodeSheet = new Spritesheet("rednode.png", 1, 10);
+		hardNodeAnim = new Animation(0.05f, hardNodeSheet.getAll());
+		hardNodeAnim.setPlayMode(PlayMode.LOOP);
 		
 		startNodeSheet = new Spritesheet("blanco.png", 1, 1);
 		startNodeAnim = new Animation(1f, startNodeSheet.get(0));
 		
-		goalNodeSheet = new Spritesheet("rosa.png", 1, 1);
-		goalNodeAnim = new Animation(1f, goalNodeSheet.get(0));
+		goalNodeSheet = new Spritesheet("pinknode.png", 8, 9);
+		goalNodeAnim = new Animation(0.05f, goalNodeSheet.getRange(0, 68));
+		goalNodeAnim.setPlayMode(PlayMode.LOOP);
 		
-		spawnerNodeSheet = new Spritesheet("marron.png", 1, 1);
-		spawnerNodeAnim = new Animation(1f, spawnerNodeSheet.get(0));
+		spawnerNodeSheet = new Spritesheet("brownode.png", 1, 10);
+		spawnerNodeAnim = new Animation(0.05f, spawnerNodeSheet.getAll());
+		spawnerNodeAnim.setPlayMode(PlayMode.LOOP);
 
 		System.out.println("Assets loaded");
 	}
