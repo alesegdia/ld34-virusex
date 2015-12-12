@@ -1,5 +1,6 @@
 package com.alesegdia.virusex.assets;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 
@@ -22,6 +23,8 @@ public class Gfx {
 	public static Animation spawnerNodeAnim;
 	public static Animation playerAnim;
 	public static Animation enemyAnim;
+	
+	public static Texture bg2 = new Texture("bg2.png");
 
 	public static void Initialize()
 	{
