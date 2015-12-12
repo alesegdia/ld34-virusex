@@ -1,4 +1,4 @@
-package com.alesegdia.virusex.entities;
+package com.alesegdia.virusex.entities.node;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 

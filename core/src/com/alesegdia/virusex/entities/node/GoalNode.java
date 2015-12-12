@@ -1,4 +1,4 @@
-package com.alesegdia.virusex.entities;
+package com.alesegdia.virusex.entities.node;
 
 import com.alesegdia.virusex.assets.Gfx;
 
