@@ -55,6 +55,11 @@ public class Spritesheet {
 		return this.tiles[p];
 	}
 	
+	public TextureRegion[] getAll()
+	{
+		return getRange(0, tiles.length-1);
+	}
+	
 	public TextureRegion[] getRange( int from, int to ) {
 		TextureRegion[] range = new TextureRegion[to - from + 1];
 		for( int i = from; i <= to; i++ ) {
