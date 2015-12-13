@@ -5,14 +5,15 @@ import java.util.List;
 
 import com.alesegdia.virusex.World;
 import com.alesegdia.virusex.entities.Entity;
+import com.alesegdia.virusex.entities.Faction;
 import com.badlogic.gdx.graphics.g2d.Animation;
 
 public class Node extends Entity {
 	
-	private World gw;
+	protected World gw;
 
-	public Node(World world, float x, float y, Animation anim) {
-		super(x, y, anim);
+	public Node(World world, float x, float y, Animation anim, Faction faction) {
+		super(x, y, anim, faction);
 		this.gw = world;
 	}
 	
