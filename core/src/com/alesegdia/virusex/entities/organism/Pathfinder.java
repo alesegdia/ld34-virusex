@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-
 import com.alesegdia.virusex.entities.node.Node;
 import com.badlogic.gdx.math.Vector2;
 
@@ -44,9 +42,6 @@ public class Pathfinder {
 			processed.add(n);
 			toprocess.removeAll(processed);
 		}
-
-		System.out.println(processed.size());
-		System.out.println(toprocess.size());
 		
 		for( MapNode mn : mapnodes )
 		{
