@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.alesegdia.virusex.entities.Entity;
+import com.alesegdia.virusex.entities.Faction;
 import com.alesegdia.virusex.entities.node.GoalNode;
 import com.alesegdia.virusex.entities.node.HardNode;
 import com.alesegdia.virusex.entities.node.Link;
@@ -13,11 +14,13 @@ import com.alesegdia.virusex.entities.node.Node;
 import com.alesegdia.virusex.entities.node.SpawnerNode;
 import com.alesegdia.virusex.entities.node.StartNode;
 import com.alesegdia.virusex.entities.node.WeakNode;
+import com.alesegdia.virusex.entities.organism.Antibody;
 import com.alesegdia.virusex.entities.organism.Organism;
 import com.alesegdia.virusex.entities.organism.Virus;
 import com.alesegdia.virusex.level.LevelData;
 import com.alesegdia.virusex.level.LinkEntry;
 import com.alesegdia.virusex.level.NodeEntry;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -26,7 +29,7 @@ public class World {
 
 	List<Node> nodes = new LinkedList<Node>();
 	List<Link> links = new LinkedList<Link>();
-	List<Organism> organisms = new LinkedList<Organism>();
+	List<Organism> organisms = new ArrayList<Organism>();
 	
 	private Node rootNode;
 	private Virus virus;
@@ -80,9 +83,17 @@ public class World {
 			e.update(delta);
 		}
 		
-		for( Entity e : organisms )
+		for( int i = 0; i < this.organisms.size(); i++ )
 		{
+			Entity e = this.organisms.get(i);
 			e.update(delta);
+		}
+		for( Link l : links )
+		{
+			if( l.nodeA.faction == Faction.PLAYER && l.nodeB.faction == Faction.PLAYER )
+			{
+				l.isCaptured = true;
+			}
 		}
 	}
 	
@@ -95,7 +106,12 @@ public class World {
 	{
 		for( Node n : nodes )
 		{
+			if( n.faction == Faction.PLAYER )
+			{
+				batch.setColor(1,1,1,1);
+			}
 			renderEntity(n, batch);
+			batch.setColor(1,1,1,1);
 		}
 	}
 	
@@ -116,9 +132,11 @@ public class World {
 	
 	public void renderEntity( Entity n, SpriteBatch b )
 	{
+		b.setColor(1, 1, 1, n.alfa);
 		b.draw(n.getDrawable(),
 				n.position.x - n.getDrawable().getRegionWidth() / 2,
 				n.position.y - n.getDrawable().getRegionHeight() / 2);
+		b.setColor(1,1,1,1);
 	}
 	
 	public void disconnectNodes()
@@ -255,4 +273,21 @@ public class World {
 		return this.startNode;
 	}
 
+	public void spawnAntibodies() {
+		for( Node n : this.nodes )
+		{
+			if( n instanceof SpawnerNode )
+			{
+				SpawnerNode sn = (SpawnerNode)n;
+				sn.spawnAntibody();
+			}
+		}
+	}
+
+	public void removeAntibody(Antibody antibody) {
+		this.organisms.remove(antibody);
+	}
+
+	public OrthographicCamera camera;
+	
 }
