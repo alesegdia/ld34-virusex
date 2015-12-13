@@ -24,26 +24,32 @@ public class Gfx {
 	public static Animation virusAnim;
 	public static Animation enemyAnim;
 	
-	public static Texture bg2 = new Texture("bg2.png");
+	public static Texture bg2;
+	public static Texture bg2det;
 
 	public static void Initialize()
 	{
 		System.out.println("Initializing assets...");
 		
-		weakNodeSheet = new Spritesheet("greenode_4x3.png", 4, 4);
-		weakNodeAnim = new Animation(0.05f, weakNodeSheet.getRange(0, 8));
+		bg2 = new Texture("bg2.png");
+		bg2det = new Texture("bg2blue.png");
+		
+		weakNodeSheet = new Spritesheet("greenode_4x2.png", 5, 4);
+		weakNodeAnim = new Animation(0.05f, weakNodeSheet.getAll());
 		weakNodeAnim.setPlayMode(PlayMode.LOOP);
 
-		midNodeSheet = new Spritesheet("azul.png", 1, 1);
-		midNodeAnim = new Animation(1f, midNodeSheet.get(0));
-		
+		midNodeSheet = new Spritesheet("bluenode_4x5.png", 5, 4);
+		midNodeAnim = new Animation(0.1f, midNodeSheet.getRange(0, 17));
+		midNodeAnim.setPlayMode(PlayMode.LOOP);
+
 		hardNodeSheet = new Spritesheet("rednode.png", 1, 10);
 		hardNodeAnim = new Animation(0.05f, hardNodeSheet.getAll());
 		hardNodeAnim.setPlayMode(PlayMode.LOOP);
 		
-		startNodeSheet = new Spritesheet("blanco.png", 1, 1);
-		startNodeAnim = new Animation(1f, startNodeSheet.get(0));
-		
+		startNodeSheet = new Spritesheet("whitenode_4x4.png", 4, 4);
+		startNodeAnim = new Animation(0.1f, startNodeSheet.getRange(0, 13));
+		startNodeAnim.setPlayMode(PlayMode.LOOP);
+
 		goalNodeSheet = new Spritesheet("pinknode.png", 8, 9);
 		goalNodeAnim = new Animation(0.05f, goalNodeSheet.getRange(0, 68));
 		goalNodeAnim.setPlayMode(PlayMode.LOOP);
@@ -52,9 +58,13 @@ public class Gfx {
 		spawnerNodeAnim = new Animation(0.05f, spawnerNodeSheet.getAll());
 		spawnerNodeAnim.setPlayMode(PlayMode.LOOP);
 		
-		virusSheet = new Spritesheet("virus.png", 1, 17);
-		virusAnim = new Animation(0.05f, virusSheet.getAll());
-		virusAnim.setPlayMode(PlayMode.LOOP);		
+		virusSheet = new Spritesheet("virus_1x12.png", 1, 12);
+		virusAnim = new Animation(0.1f, virusSheet.getAll());
+		virusAnim.setPlayMode(PlayMode.LOOP);
+		
+		enemySheet = new Spritesheet("antibody.png", 1, 17);
+		enemyAnim = new Animation(0.05f, enemySheet.getAll());
+		enemyAnim.setPlayMode(PlayMode.LOOP);
 
 		System.out.println("Assets loaded");
 	}
