@@ -11,11 +11,14 @@ public class Entity {
 	public Animation animation;
 	public float timer = 0;
 	public float zOrder = 0;
-	
-	public Entity(float x, float y, Animation anim)
+	public Faction faction;
+	public float alfa = 1;
+
+	public Entity(float x, float y, Animation anim, Faction faction)
 	{
 		this.position = new Vector2(x, y);
 		this.animation = anim;
+		this.faction = faction;
 	}
 	
 	public void update( float delta )
