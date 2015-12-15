@@ -74,8 +74,11 @@ public class Sfx {
 		lose = Gdx.audio.newMusic(Gdx.files.internal("sfx/lose_2.ogg"));
 		
 		mainmenu = Gdx.audio.newMusic(Gdx.files.internal("sfx/tension.ogg"));
+		mainmenu.setLooping(true);
+		
 		credits  = Gdx.audio.newMusic(Gdx.files.internal("sfx/credits.ogg"));
-
+		credits.setLooping(true);
+		
 		maintheme = Gdx.audio.newMusic(Gdx.files.internal("sfx/maintheme.ogg"));
 		detected  = Gdx.audio.newMusic(Gdx.files.internal("sfx/detected.ogg"));
 		maintheme.setLooping(true);
