@@ -51,7 +51,6 @@ public class Pathfinder {
 				mn.neighboors.add(mnn);
 			}
 		}
-		
 	}
 
 	public MapNode findMapNode(  Node n )
@@ -120,7 +119,6 @@ public class Pathfinder {
 			}
 		}
 		
-		System.out.println(min);
 		return min;
 	}
 	

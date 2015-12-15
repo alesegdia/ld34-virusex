@@ -1,8 +1,8 @@
 package com.alesegdia.virusex.entities.organism;
 
-import com.alesegdia.virusex.World;
 import com.alesegdia.virusex.entities.Entity;
 import com.alesegdia.virusex.entities.Faction;
+import com.alesegdia.virusex.entities.World;
 import com.alesegdia.virusex.entities.node.Node;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
@@ -74,13 +74,17 @@ public class Organism extends Entity {
 	}
 	
 	Vector2 tmp = new Vector2(0,0);
+	Vector2 spd = new Vector2(0,0);
 	public void update(float delta)
 	{
 		super.update(delta);
 		
 		if( this.state == MOVING_STATE )
 		{
-			this.position = this.position.add(this.speed);
+			spd.x = this.speed.x;
+			spd.y = this.speed.y;
+			spd.scl(delta);
+			this.position = this.position.add(spd);
 			tmp.x = this.position.x;
 			tmp.y = this.position.y;
 			float len = tmp.sub(targetNode.position).len();
