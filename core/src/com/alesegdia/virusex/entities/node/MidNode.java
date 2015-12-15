@@ -1,8 +1,8 @@
 package com.alesegdia.virusex.entities.node;
 
-import com.alesegdia.virusex.World;
 import com.alesegdia.virusex.assets.Gfx;
 import com.alesegdia.virusex.entities.Faction;
+import com.alesegdia.virusex.entities.World;
 
 public class MidNode extends Node {
 
