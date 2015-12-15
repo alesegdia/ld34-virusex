@@ -2,6 +2,7 @@ package com.alesegdia.virusex.screen;
 
 import com.alesegdia.virusex.GdxGame;
 import com.alesegdia.virusex.assets.Gfx;
+import com.alesegdia.virusex.assets.Sfx;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -19,7 +20,7 @@ public class IntroScreen implements Screen {
 	@Override
 	public void show() {
 		state = 0;
-		
+		Sfx.MainMenu();
 	}
 
 	int state = 0;

@@ -1,6 +1,7 @@
 package com.alesegdia.virusex.screen;
 
 import com.alesegdia.virusex.GdxGame;
+import com.alesegdia.virusex.assets.Sfx;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -29,6 +30,7 @@ public class CreditsScreen implements Screen {
 				   	   "lmb => main";
 		this.nextLetter = 0.1f;
 		this.nextLetterIndex = 0;
+		Sfx.Credits();
 	}
 
 	@Override
@@ -40,7 +42,7 @@ public class CreditsScreen implements Screen {
 		System.out.println(this.nextLetter);
 		if( this.nextLetter < 0 && this.nextLetterIndex < this.credits.length() )
 		{
-			this.nextLetter = 0.1f;
+			this.nextLetter = 0.05f;
 			this.showText += this.credits.charAt(this.nextLetterIndex);
 			this.nextLetterIndex++;
 		}

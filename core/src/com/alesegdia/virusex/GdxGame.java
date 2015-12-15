@@ -32,10 +32,10 @@ public class GdxGame extends Game {
 	public int level = 0;
 	public String[] levelPaths = {
 			"levels/Level-01.json",
-			"levels/Level-02.json",
-			"levels/Level-03.json",
+			//"levels/Level-02.json",
+			/*"levels/Level-03.json",
 			"levels/Level-04.json",
-			"levels/Level-05.json",
+			"levels/Level-05.json",*/
 	};
 	public String[] levelTexts = {
 			"your presence is so insignificant\nas the fact of your existence",
@@ -53,6 +53,9 @@ public class GdxGame extends Game {
 
 	@Override
 	public void create () {
+		Gfx.Initialize();
+		Sfx.Initialize();
+
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		if( editorMode )
@@ -73,8 +76,6 @@ public class GdxGame extends Game {
 		fontBig = new BitmapFont();
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setAutoShapeType(true);
-		Gfx.Initialize();
-		Sfx.Initialize();
 		Sfx.maintheme.setLooping(true);
 		Sfx.maintheme.play();
 		Sfx.detected.play();

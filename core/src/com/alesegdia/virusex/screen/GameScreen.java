@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.alesegdia.virusex.GdxGame;
-import com.alesegdia.virusex.World;
 import com.alesegdia.virusex.assets.Gfx;
+import com.alesegdia.virusex.assets.Sfx;
+import com.alesegdia.virusex.entities.World;
 import com.alesegdia.virusex.entities.node.GoalNode;
 import com.alesegdia.virusex.entities.node.HardNode;
 import com.alesegdia.virusex.entities.node.Link;
@@ -38,6 +39,8 @@ public class GameScreen implements Screen {
 	private boolean start;
 	private boolean editMode;
 	
+	private float timeLeft = 100;
+	
 	public GameScreen( GdxGame g, String levelPath )
 	{
 		this(g, levelPath, true);
@@ -55,8 +58,23 @@ public class GameScreen implements Screen {
 	
 	@Override
 	public void show() {
-		this.gw.clear();
 		this.start = true;
+		if( !devMode )
+		{
+			reloadLevel(g.levelPaths[g.level]);
+		}
+		this.timeLeft = 100;
+		if( g.level == 0 )
+		{
+			//reloadLevel("levels/Level-05.json");
+		}
+	}
+	
+	public void reloadLevel(String levelPath)
+	{
+		gw.clear();
+		loadLevel(levelPath);
+		spawnVirus();
 	}
 	
 	Node firstCx = null;
@@ -66,6 +84,10 @@ public class GameScreen implements Screen {
 	Node secondPf = null;
 	
 	Node toMove = null;
+	
+	String helpText = "";
+	
+	String levelText = "";
 	
 	String levelFile = "newLevel.json";
 	
@@ -79,9 +101,11 @@ public class GameScreen implements Screen {
 							   "F2/F4 => save/load\n" +
 							   "F6 => spawn virus\n" +
 							   "F8 => toggle edit mode\n" +
-							   "F1 => open/close instructions";
+							   "F1 => open/close instructions\n" +
+							   "arrows => scroll\n";
 	
 	List<Node> path = new LinkedList<Node>();
+	private float helpTextTimer;
 	
 	void handleEdit()
 	{
@@ -182,17 +206,21 @@ public class GameScreen implements Screen {
 			
 			if( toolMode == ToolMode.MOVE )
 			{
+				//Node n = this.gw.findNear( new Vector2( mx + gw.camera.position.x - gw.camera.viewportWidth/2, my + gw.camera.position.y - gw.camera.viewportHeight/2 ) );
 				Node n = this.gw.findNear( new Vector2( mx, my ) );
+				
 				if( n != null )
 				{
 					toMove = n;
 				}
 			}
 		}
-		
+
 		if( toolMode == ToolMode.MOVE && toMove != null && Gdx.input.isButtonPressed(Input.Buttons.LEFT) )
 		{
-			toMove.position = new Vector2(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
+			float mx = Gdx.input.getX() + this.g.cam.position.x - this.g.cam.viewportWidth/2;
+			float my = Gdx.graphics.getHeight() - Gdx.input.getY() + this.g.cam.position.y- this.g.cam.viewportHeight/2;
+			toMove.position = new Vector2(mx, my);
 		}
 		
 		if( Gdx.input.isKeyJustPressed(Input.Keys.F1) )
@@ -202,30 +230,89 @@ public class GameScreen implements Screen {
 		
 		if( Gdx.input.isKeyJustPressed(Input.Keys.F6) )
 		{
-			spawnVirus();			
+			spawnVirus();
 		}
+	}
+	
+	private void helpTextFn(String text)
+	{
+		this.helpText = text;
+		this.helpTextTimer = 2f;
 	}
 
 	private void spawnVirus()
 	{
-		Node sn = gw.getStartNode();
-		Vector2 start;
-		if( sn != null )
+		if( gw.getStartNode() == null )
 		{
-			start = gw.getStartNode().position;				
+			helpTextFn("Start node not set");
+		}
+		else if( gw.getGoalNode() == null )
+		{
+			helpTextFn("Goal node not set");
+		}
+		else if( gw.getVirus() != null )
+		{
+			helpTextFn("Virus already spawned");
 		}
 		else
 		{
-			start = new Vector2(100,100);
+			Node sn = gw.getStartNode();
+			Vector2 start;
+			if( sn != null )
+			{
+				start = gw.getStartNode().position;				
+			}
+			else
+			{
+				start = new Vector2(100,100);
+			}
+			gw.addOrganism(new Virus(gw, start.x, start.y));		
 		}
-		gw.addOrganism(new Virus(gw, start.x, start.y));		
 	}
-
+	
 	float timer = 0;
 	Matrix4 defmat = new Matrix4();
 	
 	@Override
-	public void render(float delta) {
+	public void render(float delta)
+	{
+
+	
+		if( gw.getVirus() != null )
+		{
+			if( !gw.getVirus().hasLost && !gw.getVirus().hasWon )
+			{
+				if( gw.getVirus().isStealth() )
+				{
+					timeLeft -= delta * (7 + (gw.getVirus().numStealths));			
+				}
+				else
+				{
+					timeLeft -= delta;
+				}
+			}
+		}
+		
+		if( timeLeft < 0 && gw.getVirus() != null ) 
+		{
+			timeLeft = 0;
+			gw.getVirus().hasLost = true;
+			Sfx.MusicOff();
+			Sfx.lose.play();
+		}
+		
+		if( helpTextTimer > 0 )
+		{
+			helpTextTimer -= delta;
+		}
+		
+		if( start && devMode )
+		{
+			this.loadLevel(this.levelPath);
+			if( !devMode ) spawnVirus();
+			start = false;
+		}
+
 		timer += delta;
 		
 		if( gw.getVirus() != null && !this.editMode)
@@ -234,28 +321,39 @@ public class GameScreen implements Screen {
 		}
 		
 		g.cam.update();
-		if( start )
-		{
-			this.loadLevel(this.levelPath);
-			start = false;
-		}
 
-		gw.update(delta);
+		if( gw.getVirus() != null )
+		{
+			if( gw.getVirus().hasWon || gw.getVirus().hasLost )
+			{
+				gw.update(delta/4);
+			}
+			else
+			{
+				gw.update(delta);
+			}
+		}
+		else
+		{
+			gw.update(delta);			
+		}
 
 		//Gdx.gl.glClearColor(0.24f, 0.11f, 0f, 1);
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		g.batch2.begin();
-		g.batch2.draw(Gfx.bg2det, 0, 0);
-		if( gw.getVirus() != null ) {
-			if( gw.getVirus().detected ) g.batch2.setColor(1f, 1f, 1f, (1f + (float)Math.sin(timer*10))/2f);
-			else g.batch2.setColor(1,1,1,1);
-		}
-		g.batch2.draw(Gfx.bg2, 0, 0);
-		g.batch2.setColor(1,1,1,1);
-		g.batch2.end();
+			g.batch2.begin();
+			g.batch2.draw(Gfx.bg2det, 0, 0);
+			if( gw.getVirus() != null ) {
+				if( gw.getVirus().hasWon ) g.batch2.setColor(1,1,1,0);
+				else if( gw.getVirus().hasLost ) g.batch2.setColor(1,0,0,1);
+				else if( gw.getVirus().detected ) g.batch2.setColor(1f, 1f, 1f, (1f + (float)Math.sin(timer*10))/2f);
+				else g.batch2.setColor(1,1,1,1);
+			}
+			g.batch2.draw(Gfx.bg2, 0, 0);
+			g.batch2.setColor(1,1,1,1);
+			g.batch2.end();
 		
 		if( this.devMode && this.editMode )
 		{
@@ -284,14 +382,18 @@ public class GameScreen implements Screen {
 		Virus virus = gw.getVirus();
 		
 		g.batch2.begin();
-		if( virus != null )
+		if( virus != null && !editMode )
 		{
-			String detectionStr = "" + virus.detectionBar + "%";
-			g.fontBig.draw(g.batch2, detectionStr, 10, 20);
+			String detectionStr = "" + Math.round(100 - virus.detectionBar) + "%";
+			g.fontBig.draw(g.batch2, detectionStr, 10, Gdx.graphics.getHeight() - 10);
+			g.fontBig.draw(g.batch2, Math.round(timeLeft) + "", 730, Gdx.graphics.getHeight() - 10);
 			if( virus.detected )
 			{
-				g.fontBig.draw(g.batch2, "" + virus.detectedTimer, 400, 300);
+				g.fontRlyBig.draw(g.batch2, "" + Math.round(virus.detectedTimer), 370, 380);
 			}
+			g.fontBig.draw(g.batch2, "lvl-" + (g.level), 10, 30);
+			g.font.draw(g.batch2, g.levelTexts[g.level], 110, Gdx.graphics.getHeight() - 10);
+			
 		}
 		
 		if( this.devMode && this.editMode )
@@ -318,18 +420,6 @@ public class GameScreen implements Screen {
 			}
 			if( Gdx.input.isKeyJustPressed(Input.Keys.F4))
 			{
-				/*
-				Scanner kb = new Scanner(System.in);
-				String level = kb.next();
-				if( level == "" )
-				{
-					loadLevel();
-				}
-				else
-				{
-					loadLevel(level);
-				}
-				*/
 				loadLevel();
 			}
 		}
@@ -346,6 +436,56 @@ public class GameScreen implements Screen {
 
 		g.shapeRenderer.end();
 		
+		if( !devMode && gw.getVirus() != null )
+		{
+			
+			if( gw.getVirus().hasWon && !Sfx.win.isPlaying() )
+			{
+				Sfx.MusicOn();
+
+				g.level++;
+				if( g.level >= g.levelPaths.length )
+				{
+					g.level = 0;
+					g.setScreen(g.creditsScreen);
+					System.out.println("credits!");
+				}
+				else
+				{
+					g.setScreen(g.gameScreen);					
+				}
+			}
+			else if( gw.getVirus().hasLost && !Sfx.lose.isPlaying() )
+			{
+				Sfx.MusicOn();
+
+				g.setScreen(g.introScreen);
+			}
+		}
+
+		if( gw.getVirus() != null )
+		{
+			this.timeLeft += gw.getVirus().timeadd;
+			gw.getVirus().timeadd = 0;
+			
+			if( gw.getVirus().virusHelpMsg == 1 ) this.helpTextFn("you need to infect all nodes");
+			if( gw.getVirus().virusHelpMsg == 2 ) this.helpTextFn("spawners can't be infected");
+		}
+		
+		if( helpTextTimer > 0 )
+		{
+			System.out.println(helpText);
+			g.batch2.begin();
+			g.font.draw(g.batch2, helpText, 10, 60);
+			g.batch2.end();
+		}
+		else if( virus != null && virus.allCaptured )
+		{
+			g.batch2.begin();
+			g.font.draw(g.batch2, "you can now keep spreading evil", 10, 60);
+			g.batch2.end();
+		}
+
 	}
 	
 	public void saveLevel()
@@ -400,8 +540,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-		
+		gw.clear();
 	}
 
 	@Override
