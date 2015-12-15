@@ -1,11 +1,10 @@
-package com.alesegdia.virusex;
+package com.alesegdia.virusex.entities;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.alesegdia.virusex.entities.Entity;
-import com.alesegdia.virusex.entities.Faction;
+import com.alesegdia.virusex.assets.Gfx;
 import com.alesegdia.virusex.entities.node.GoalNode;
 import com.alesegdia.virusex.entities.node.HardNode;
 import com.alesegdia.virusex.entities.node.Link;
@@ -22,6 +21,7 @@ import com.alesegdia.virusex.level.LinkEntry;
 import com.alesegdia.virusex.level.NodeEntry;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
@@ -78,10 +78,16 @@ public class World {
 	
 	public void update(float delta)
 	{
+		boolean allCaptured = true;
 		for( Entity e : nodes )
 		{
 			e.update(delta);
+			if( !(e instanceof SpawnerNode) && e.faction == Faction.ENEMY )
+			{
+				allCaptured = false;
+			}
 		}
+		if( virus != null ) virus.allCaptured = allCaptured;
 		
 		for( int i = 0; i < this.organisms.size(); i++ )
 		{
@@ -111,6 +117,11 @@ public class World {
 				batch.setColor(1,1,1,1);
 			}
 			renderEntity(n, batch);
+			if( n.faction == Faction.PLAYER &&( (n instanceof WeakNode) || (n instanceof MidNode) || (n instanceof HardNode) ))
+			{
+				TextureRegion tr = Gfx.flagVirusAnim.getKeyFrame(n.capturedTimer);
+				batch.draw(tr, n.position.x, n.position.y);
+			}
 			batch.setColor(1,1,1,1);
 		}
 	}
@@ -165,6 +176,11 @@ public class World {
 	public void clear() {
 		disconnectNodes();
 		this.nodes.clear();
+		this.links.clear();
+		this.organisms.clear();
+		this.goalNode = null;
+		this.startNode = null;
+		this.virus = null;
 	}
 
 	public Node findNear(Vector2 mousePos) {
@@ -276,7 +292,7 @@ public class World {
 	public void spawnAntibodies() {
 		for( Node n : this.nodes )
 		{
-			if( n instanceof SpawnerNode )
+			if( n instanceof SpawnerNode && !n.areNeighboorsCaptured() )
 			{
 				SpawnerNode sn = (SpawnerNode)n;
 				sn.spawnAntibody();
@@ -289,5 +305,20 @@ public class World {
 	}
 
 	public OrthographicCamera camera;
+
+	public boolean connectedSpawners() {
+		for( Node n : this.nodes )
+		{
+			if( n instanceof SpawnerNode )
+			{
+				SpawnerNode sn = (SpawnerNode)n;
+				if( !sn.areNeighboorsCaptured() )
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 }
