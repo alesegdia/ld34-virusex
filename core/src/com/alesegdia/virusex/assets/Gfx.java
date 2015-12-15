@@ -14,6 +14,7 @@ public class Gfx {
 	public static Spritesheet spawnerNodeSheet;
 	public static Spritesheet virusSheet;
 	public static Spritesheet enemySheet;
+	public static Spritesheet flagVirusSheet;
 	
 	public static Animation weakNodeAnim;
 	public static Animation midNodeAnim;
@@ -23,9 +24,16 @@ public class Gfx {
 	public static Animation spawnerNodeAnim;
 	public static Animation virusAnim;
 	public static Animation enemyAnim;
+	public static Animation flagVirusAnim;
 	
 	public static Texture bg2;
 	public static Texture bg2det;
+	
+	public static Texture controls;
+	public static Texture splash;
+
+	public static Texture basics;
+	public static Texture basics2;
 
 	public static void Initialize()
 	{
@@ -34,7 +42,7 @@ public class Gfx {
 		bg2 = new Texture("bg2.png");
 		bg2det = new Texture("bg2blue.png");
 		
-		weakNodeSheet = new Spritesheet("greenode_4x2.png", 5, 4);
+		weakNodeSheet = new Spritesheet("greenode_8x8.png", 8, 8);
 		weakNodeAnim = new Animation(0.05f, weakNodeSheet.getAll());
 		weakNodeAnim.setPlayMode(PlayMode.LOOP);
 
@@ -65,6 +73,17 @@ public class Gfx {
 		enemySheet = new Spritesheet("antibody.png", 1, 17);
 		enemyAnim = new Animation(0.05f, enemySheet.getAll());
 		enemyAnim.setPlayMode(PlayMode.LOOP);
+		
+		flagVirusSheet = new Spritesheet("flagvirus_1x13.png", 1, 13);
+		flagVirusAnim = new Animation(0.1f, flagVirusSheet.getAll());
+		flagVirusAnim.setPlayMode(PlayMode.LOOP);
+		
+		controls = new Texture("controlsx2.png");
+		splash = new Texture("main6.png");
+
+		basics = new Texture("basics.png");
+		basics2 = new Texture("basics2.png");
+		
 
 		System.out.println("Assets loaded");
 	}
