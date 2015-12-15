@@ -32,17 +32,24 @@ public class GdxGame extends Game {
 	public int level = 0;
 	public String[] levelPaths = {
 			"levels/Level-01.json",
-			//"levels/Level-02.json",
-			/*"levels/Level-03.json",
+			"levels/Level-02.json",
+			"levels/Level-03.json",
 			"levels/Level-04.json",
-			"levels/Level-05.json",*/
+			"levels/Level-05.json",
+			"levels/Level-06.json",
+			"levels/Level-07.json",
+			"levels/Level-08.json",
+			
 	};
 	public String[] levelTexts = {
 			"your presence is so insignificant\nas the fact of your existence",
 			"i am the many",
 			"you pile of junk",
 			"... and Ayla is Broken, and you know it Ronimo.",
-			""
+			"",
+			"",
+			"",
+			"",
 	};
 	public CreditsScreen creditsScreen;
 	
