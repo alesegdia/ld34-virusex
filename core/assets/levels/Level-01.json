@@ -1,0 +1,1 @@
+{nodes:[{nodeType:start,x:388,y:113},{nodeType:weak,x:388,y:261},{nodeType:goal,x:386,y:505}],links:[{x1:388,y1:113,x2:388,y2:261},{x1:388,y1:261,x2:386,y2:505}]}
